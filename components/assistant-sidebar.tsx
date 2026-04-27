@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import type { AssistantTurn, MissionId, OrchestratorHint, VotingState } from "@/lib/types";
+import type { AssistantTurn, OrchestratorHint, VotingState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export function AssistantSidebar({
@@ -26,7 +26,6 @@ export function AssistantSidebar({
   currentMissionLabel,
   hint,
   onSubmit,
-  onJumpToMission,
 }: {
   history: AssistantTurn[];
   readiness: number;
@@ -36,7 +35,6 @@ export function AssistantSidebar({
   currentMissionLabel: string;
   hint: OrchestratorHint | null;
   onSubmit: (message: string) => void;
-  onJumpToMission: (mission: MissionId) => void;
 }) {
   const [draft, setDraft] = useState("");
 
@@ -97,9 +95,6 @@ export function AssistantSidebar({
           </CardHeader>
           <CardContent className="grid gap-3">
             <p className="text-sm text-[var(--muted-foreground)]">{hint.body}</p>
-            <Button size="sm" onClick={() => onJumpToMission(hint.mission)}>
-              Follow this nudge
-            </Button>
           </CardContent>
         </Card>
       ) : null}

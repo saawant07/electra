@@ -1,49 +1,63 @@
-export type SupportedLanguage = "en" | "hi" | "bn" | "ta";
+export type SupportedLanguage = "en" | "hi";
 
 export type VotingState =
   | "Assam"
   | "Kerala"
   | "Puducherry"
   | "Tamil Nadu"
-  | "West Bengal";
-
-export type AgeGroup = "18-19" | "20-24" | "25-34" | "35+";
+  | "West Bengal"
+  | "Other";
 
 export type TopicKey = "documents" | "evm" | "rights" | "timelines" | "myths";
 
 export type MissionId =
-  | "socratic-challenge"
-  | "document-briefing"
-  | "election-iq-quiz"
+  | "complete-profile"
+  | "check-voter-list"
+  | "verify-documents"
+  | "find-booth"
   | "evm-simulator"
-  | "rights-and-accessibility"
-  | "booth-finder"
-  | "timeline-tracker"
-  | "election-passport";
+  | "election-iq-quiz"
+  | "debate-myths"
+  | "become-voteready";
+
+export interface BoothDetails {
+  number: string;
+  address: string;
+}
 
 export interface Profile {
   name: string;
   state: VotingState;
-  ageGroup: AgeGroup;
+  phase: 1 | 2 | null;
   isFirstTimeVoter: boolean;
   hasPwD: boolean | null;
   language: SupportedLanguage;
-  isNri: boolean;
+  boothDetails: BoothDetails | null;
+  electionDate: string;
+  selectedDocuments: string[];
+}
+
+export interface ConfidenceEntry {
+  date: string;
+  score: number;
+  topic: string;
 }
 
 export interface ActivityEvent {
   id: string;
   label: string;
-  kind: "onboarding" | "mission" | "quiz" | "debate" | "passport";
+  kind: "onboarding" | "step" | "mission" | "quiz" | "debate" | "passport";
   timestamp: string;
   impact: Partial<Record<TopicKey, number>>;
 }
 
 export interface Progress {
-  completedMissions: MissionId[];
+  completedSteps: number[];
+  currentStep: number;
   xp: number;
   streak: number;
   lastActiveDate: string | null;
+  confidenceHistory: ConfidenceEntry[];
   activityLog: ActivityEvent[];
 }
 
@@ -51,17 +65,15 @@ export interface QuizAttempt {
   id: string;
   score: number;
   total: number;
-  preConfidence: number;
-  postConfidence: number;
-  confidenceDelta: number;
+  date: string;
+  confidenceBefore: number;
+  confidenceAfter: number;
   topicBreakdown: Partial<Record<TopicKey, number>>;
-  completedAt: string;
 }
 
 export interface QuizHistory {
   attempts: QuizAttempt[];
   bestScore: number;
-  confidenceDelta: number;
 }
 
 export interface MythDebateRecord {
@@ -81,7 +93,6 @@ export interface MythDebates {
   won: string[];
   badges: string[];
   records: MythDebateRecord[];
-  argumentativenessScore: number;
 }
 
 export interface PassportState {
@@ -96,17 +107,13 @@ export interface AssistantTurn {
 }
 
 export interface SimulatorState {
-  completedSteps: string[];
-  voiceEnabledSteps: string[];
-  powerCutSeen: boolean;
-  selectedCandidate: string | null;
+  completedScenarios: string[];
+  lastCandidate: string | null;
 }
 
 export interface UiState {
   onboardingCompleted: boolean;
-  currentMission: MissionId;
   selectedMythId: string;
-  selectedBoothId: string | null;
 }
 
 export interface ConfidenceJourneyPoint {
@@ -123,18 +130,15 @@ export interface ConfidenceModel extends Record<TopicKey, number> {
   readiness: number;
   weakestTopic: TopicKey;
   journey: ConfidenceJourneyPoint[];
-  unlockedMissions: MissionId[];
 }
 
 export interface MissionDefinition {
   id: MissionId;
   title: string;
-  shortTitle: string;
+  icon: string;
   description: string;
-  cta: string;
-  impact: Partial<Record<TopicKey, number>>;
   xp: number;
-  prominent?: boolean;
+  href: string;
   prerequisites?: MissionId[];
 }
 
@@ -162,6 +166,7 @@ export interface MythDefinition {
 
 export interface QuizQuestion {
   id: string;
+  difficulty: "easy" | "medium" | "hard" | "expert";
   topic: TopicKey;
   prompt: string;
   options: Array<{
@@ -172,19 +177,15 @@ export interface QuizQuestion {
   }>;
 }
 
-export interface BoothLocation {
-  id: string;
-  state: VotingState;
-  name: string;
-  district: string;
-  address: string;
-  accessible: string[];
-  peakWindow: string;
-  queueHeatmap: Array<{
-    slot: string;
-    intensity: number;
-    minutes: number;
-  }>;
+export interface TimelineStep {
+  step: number;
+  title: string;
+  how: string;
+  why: string;
+  aiContext: string;
+  actionLabel: string | null;
+  actionHref: string | null;
+  topicImpact: TopicKey[];
 }
 
 export interface TimelineEntry {
@@ -196,14 +197,12 @@ export interface TimelineEntry {
 export interface AssistantReply {
   answer: string;
   followUp: string;
-  missionHint: MissionId;
 }
 
-export interface OrchestratorHint {
+export type OrchestratorHint = {
   title: string;
   body: string;
-  mission: MissionId;
-}
+} | null;
 
 export interface SocraticRoundResult {
   conceded: boolean;
@@ -228,19 +227,18 @@ export interface ElectraStoreState {
   assistantHistory: AssistantTurn[];
   ui: UiState;
   hydrated: boolean;
+
+  // Actions
   setHydrated: (value: boolean) => void;
   completeOnboarding: (profile: Profile) => void;
   updateProfile: (patch: Partial<Profile>) => void;
-  setCurrentMission: (mission: MissionId) => void;
-  selectMyth: (mythId: string) => void;
-  selectBooth: (boothId: string) => void;
-  completeMission: (missionId: MissionId) => void;
+  completeStep: (step: number) => void;
+  setCurrentStep: (step: number) => void;
+  addXP: (amount: number) => void;
   recordQuizAttempt: (attempt: QuizAttempt) => void;
   recordDebate: (record: MythDebateRecord) => void;
-  recordSimulatorStep: (stepId: string) => void;
-  toggleVoiceStep: (stepId: string) => void;
-  setPowerCutSeen: () => void;
-  setSelectedCandidate: (candidate: string | null) => void;
+  selectMyth: (mythId: string) => void;
+  addConfidenceEntry: (entry: ConfidenceEntry) => void;
   addAssistantTurn: (turn: AssistantTurn) => void;
   setPassportDownload: (downloadUrl: string) => void;
   clearPassportDownload: () => void;

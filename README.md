@@ -29,10 +29,10 @@ Electra is designed as a five-agent, contract-first system. Each agent has one j
 
 - Responsibility: routes user intent, detects stalls after 90 seconds, and pushes the next best hint.
 - Memory scope: full app state including profile, progress, current mission, quiz history, and myth history.
-- Tools: Personalization Agent, Simulator Agent, Socratic Agent, Assistant Agent.
+- Tools: Confidence Agent, Simulator Agent, Socratic Agent, Assistant Agent.
 - Handoff trigger: once it has chosen the next mission, delivered a proactive hint, or delegated a question.
 
-### Agent 2: Personalization Agent
+### Agent 2: Confidence Agent
 
 - Responsibility: computes the voter confidence model across documents, EVM, rights, timelines, and myths.
 - Memory scope: profile, activity log, completed missions, quiz history, myth debate results.
@@ -83,8 +83,8 @@ That makes the product feel adaptive instead of checklist-driven.
                   |                     |                      |
                   v                     v                      v
         +----------------+   +---------------------+  +------------------+
-        | Personalization|   | Socratic Agent      |  | Simulator Agent  |
-        | confidence     |   | myth debate engine  |  | EVM + VVPAT flow |
+        | Confidence     |   | Socratic Agent      |  | Simulator Agent  |
+        | Agent          |   | myth debate engine  |  | EVM + VVPAT flow |
         +--------+-------+   +----------+----------+  +---------+--------+
                  |                      |                       |
                  |                      |                       |
@@ -175,7 +175,7 @@ Use the Electra sidebar and ask: **“When is West Bengal Phase 2?”** Let the 
 
 ## Key implementation notes
 
-- Confidence is derived in `agents/personalization.ts`, not stored directly.
+- Confidence is derived in `agents/confidence.ts`, not stored directly.
 - The Myth Buster debate engine lives in `agents/socratic.ts` and `hooks/useSocratic.ts`.
 - The app is offline-first: myths, timelines, checklists, quiz content, and booth data are hardcoded so every main screen works without an AI call.
 - The Election Passport PDF embeds the readiness graph, debate badges, and a QR link to `https://voters.eci.gov.in`.

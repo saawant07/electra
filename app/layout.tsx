@@ -10,14 +10,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Electra 2026 - AI Election Co-Pilot",
+  title: "VoteReady — AI Election Co-Pilot",
   description:
-    "Offline-first election readiness app featuring a Socratic Myth Buster, EVM simulator, confidence journey, and Election Passport.",
+    "Your personal AI election guide that remembers you, tracks your journey, and gets smarter the longer you use it. Built for India's 2026 state elections.",
   manifest: "/manifest.webmanifest",
-  applicationName: "Electra 2026",
+  applicationName: "VoteReady",
   icons: {
     icon: "/pwa/icon-192.svg",
     apple: "/pwa/icon-192.svg",
+  },
+  openGraph: {
+    title: "VoteReady — AI Election Co-Pilot",
+    description: "Your personal AI election guide for India's 2026 state elections.",
+    type: "website",
   },
 };
 
@@ -27,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>

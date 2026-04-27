@@ -19,7 +19,6 @@ interface DebateTurn {
 
 export function useSocratic(mythId: string) {
   const recordDebate = useElectraStore((state) => state.recordDebate);
-  const completeMission = useElectraStore((state) => state.completeMission);
   const myth = MYTH_MAP[mythId];
   const [round, setRound] = useState(0);
   const [status, setStatus] = useState<"idle" | "active" | "complete">("idle");
@@ -104,7 +103,6 @@ export function useSocratic(mythId: string) {
       };
 
       recordDebate(record);
-      completeMission("socratic-challenge");
       celebrate();
       setOutcome({
         badge: record.badgeAwarded,

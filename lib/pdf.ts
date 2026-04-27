@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
-import { COUNTING_DAY, ELECTION_TIMELINE } from "@/data/timelines";
+import { COUNTING_DAY, ELECTION_TIMELINE } from "@/data/elections";
 import type { ConfidenceModel, MythDebates, Profile } from "@/lib/types";
 import { formatDateLong } from "@/lib/utils";
 

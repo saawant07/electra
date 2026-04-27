@@ -1,7 +1,7 @@
 "use client";
 
 import { useShallow } from "zustand/react/shallow";
-import { computeConfidenceModel } from "@/agents/personalization";
+import { computeConfidenceModel } from "@/agents/confidence";
 import { useElectraStore } from "@/store/electra-store";
 
 export function useConfidence() {

@@ -1,23 +1,10 @@
-import { LANGUAGE_META } from "@/data/timelines";
 import type { Profile } from "@/lib/types";
 
 /**
- * Simulator Agent Contract
+ * Simulator Agent
  *
- * Responsibility:
  * Runs the EVM + VVPAT rehearsal, validates each micro-step, and adapts booth
  * guidance for language, accessibility needs, and disruption scenarios.
- *
- * Memory scope:
- * Reads only `profile.state`, `profile.hasPwD`, `profile.language`, and the
- * in-progress simulator state passed into it.
- *
- * Tools / APIs:
- * Web Speech API voice coach, step validator, PwD mode hints.
- *
- * Handoff trigger:
- * Yields after each validated step or when the power-cut scenario interrupts
- * the flow and hands control back to the main UI.
  */
 
 export const SIMULATOR_STEPS = [
@@ -59,32 +46,16 @@ export const SIMULATOR_STEPS = [
   },
 ] as const;
 
-export function getStepNarration(stepId: string, profile: Profile) {
-  const step = SIMULATOR_STEPS.find((item) => item.id === stepId);
-  const lang = LANGUAGE_META[profile.language];
-
-  return {
-    languageCode: lang.speech,
-    text: step
-      ? `${step.title}. ${step.detail} ${profile.hasPwD ? "Accessible assistance is available if you ask for it." : ""}`
-      : "",
-  };
-}
-
 export function getStepHint(stepId: string, profile: Profile) {
   if (profile.hasPwD && stepId === "enter-booth") {
     return "PwD mode is live: ask for the ramp lane, seating support, or companion assistance only if you want it.";
-  }
-
-  if (profile.isNri && stepId === "show-id") {
-    return "As an NRI voter, your booth flow is the same once your overseas elector registration is valid in this constituency.";
   }
 
   if (stepId === "cast-vote") {
     return "Press only one button and wait for the beep. If the process stops, the presiding officer secures the machine before voting resumes.";
   }
 
-  return "Electra is watching for the legal reason behind each step, not just the mechanics.";
+  return "Electra is watching for the legal reason behind each step.";
 }
 
 export function validateSimulatorAction(stepId: string, action: string) {
